@@ -21,6 +21,7 @@ local RGB_WHITE = { 1, 1, 1 }
 local RGB_GREEN = { 0, 1, 0 }
 local RGB_BLUE = { 0.9913, 0.3940, 0.007 }
 local RGB_RED = { 1, 0, 0 }
+local RGB_YELLOW = { 1, 1, 0 }
 
 ABStrategy.ABLines = {
     ["left"] = { position = -1, rgb = RGB_BLUE, rgbActive = RGB_BLUE },
@@ -30,6 +31,7 @@ ABStrategy.ABLines = {
 
 ABStrategy.STEP_SIZE = 1 -- 1m each line
 ABStrategy.NUM_STEPS = 10 -- draw 10
+ABStrategy.HEADLINE_STEPS = 6
 ABStrategy.GROUND_CLEARANCE_OFFSET = .2
 
 local ABStrategy_mt = Class(ABStrategy)
@@ -131,6 +133,29 @@ function ABStrategy:draw(data, guidanceSteeringIsActive, autoInvertOffset)
 
         drawSteps(1, ABStrategy.STEP_SIZE, lineX, lineZ, lineXDir, lineZDir, RGB_RED)
     end
+
+	local function drawHeadlineSteps(step, stepSize, lx, lz, dirX, dirZ, rgb)
+        if step >= ABStrategy.HEADLINE_STEPS then
+            return
+        end
+
+        local x1 = lx - dirX + stepSize * step * dirX
+        local z1 = lz - dirZ + stepSize * step * dirZ
+        local y1 = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x1, 0, z1) + ABStrategy.GROUND_CLEARANCE_OFFSET
+
+        GuidanceUtil.renderTextAtWorldPosition(x1, y1, z1, ".", 0.02, rgb)
+        drawHeadlineSteps(step + 1, stepSize, lx, lz, dirX, dirZ, rgb)
+    end
+
+	do
+		local headlineLineOffset = (ABStrategy.STEP_SIZE * (ABStrategy.HEADLINE_STEPS - 2)) /2
+		local beta = data.alphaRad
+		local direction = Utils.getNoNil(data.snapDirectionMultiplier * -1 ,1)
+		local lineX = x - data.headlineDistance * lineDirX * direction - headlineLineOffset * lineDirZ * direction + data.width * lineDirZ * beta
+        local lineZ = z - data.headlineDistance * lineDirZ * direction + headlineLineOffset * lineDirX * direction - data.width * lineDirX * beta
+
+		drawHeadlineSteps(1, ABStrategy.STEP_SIZE, lineX, lineZ, lineZDir * -1, lineXDir, RGB_YELLOW)
+	end
 end
 
 ---Gets the guidance drive data
