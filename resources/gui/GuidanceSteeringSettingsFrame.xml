@@ -8,7 +8,7 @@
         </GuiElement>
 
         <GuiElement type="bitmap" profile="ingameMenuSettingsBox" position="130px -124px" id="container">
-            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px -50px" id="boxLayout" size="1500px 560px" debugEnabled="true">
+            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px -50px" id="boxLayout" size="1550px 560px">
                 <!--Option to enable steering-->
                 <GuiElement type="checkedOption" profile="multiTextOptionSettings" id="guidanceSteeringEnableSteeringElement"
                             toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_enableGuidanceSteering" >

@@ -8,7 +8,7 @@
         </GuiElement>
 
         <GuiElement type="bitmap" profile="ingameMenuSettingsBox" position="130px -124px" id="container">
-            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px -50px" id="boxLayout1">
+            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px -50px" id="boxLayout1" size="1550px 560px">
                 <GuiElement type="multiTextOption" profile="multiTextOptionSettings" id="guidanceSteeringStrategyElement"
                             toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_strategy">
                     <GuiElement type="button" profile="multiTextOptionLeft"/>
@@ -26,10 +26,8 @@
                     <GuiElement type="text" profile="multiTextOptionTitle" text="$l10n_guidanceSteering_setting_strategyMethod"/>
                     <GuiElement type="bitmap" profile="multiTextOptionBg"/>
                 </GuiElement>
-            </GuiElement>
-
-            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px -250px" id="boxLayout2">
-                <GuiElement type="button" profile="guidanceButton" text="$l10n_guidanceSteering_setting_pointA" position="-210px 64px"
+            
+                <GuiElement type="button" profile="guidanceButton" text="$l10n_guidanceSteering_setting_pointA" 
                             onClick="onClickSetPointA"
                             id="guidanceSteeringPointAButton"/>
 
@@ -42,12 +40,10 @@
                     <GuiElement type="bitmap" profile="multiTextOptionBg"/>
                 </GuiElement>
 
-                <GuiElement type="button" profile="guidanceButton" text="$l10n_guidanceSteering_setting_pointB" position="-210px 64px"
+                <GuiElement type="button" profile="guidanceButton" text="$l10n_guidanceSteering_setting_pointB" margin="30px 28px 30px 100px"
                             onClick="onClickSetPointB"
                             id="guidanceSteeringPointBButton"/>
-            </GuiElement>
-
-            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="450px -50px" id="boxLayout3">
+            
                 <GuiElement type="multiTextOption" profile="multiTextOptionSettings" id="guidanceSteeringTrackElement"
                             toolTipElementId="settingsHelpBoxText" onClick="onClickLoadTrack"
                             toolTipText="$l10n_guidanceSteering_tooltip_currentTrack">
@@ -63,16 +59,19 @@
                             imePlaceholder="$l10n_ui_savegameName" focusInit="onOpen">
                     <GuiElement type="text" profile="multiTextOptionSettingsTitle" text="$l10n_ui_savegameName"/>
                 </GuiElement>
-            </GuiElement>
 
-            <GuiElement type="flowLayout" profile="ingameMenuSettingsLayout" position="450px -250px" id="flowLayout">
+              <GuiElement type="flowLayout" profile="ingameMenuSettingsLayout" id="flowLayout" size="372px 57px" margin="0px 28px 0px 0px" >
                 <GuiElement type="button" profile="guidanceButtonSmallLeft" text="$l10n_guidanceSteering_setting_saveTrack"
                             onClick="onClickSaveTrack"
                             id="guidanceSteeringSaveButton"/>
                 <GuiElement type="button" profile="guidanceButtonSmallRight" text="$l10n_guidanceSteering_setting_removeTrack"
                             onClick="onClickRemoveTrack"
                             id="guidanceSteeringRemoveTrackButton"/>
+              </GuiElement>
+              
             </GuiElement>
+
+            
         </GuiElement>
 
         <!-- Tool tip display -->
