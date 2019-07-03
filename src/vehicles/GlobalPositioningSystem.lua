@@ -55,17 +55,14 @@ function GlobalPositioningSystem.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onWriteUpdateStream", GlobalPositioningSystem)
     SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", GlobalPositioningSystem)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdate", GlobalPositioningSystem)
+    SpecializationUtil.registerEventListener(vehicleType, "onUpdateTick", GlobalPositioningSystem)
     SpecializationUtil.registerEventListener(vehicleType, "onDraw", GlobalPositioningSystem)
     SpecializationUtil.registerEventListener(vehicleType, "onEnterVehicle", GlobalPositioningSystem)
     SpecializationUtil.registerEventListener(vehicleType, "onLeaveVehicle", GlobalPositioningSystem)
-    SpecializationUtil.registerEventListener(vehicleType, "onHeadlandStart", GlobalPositioningSystem)
-    SpecializationUtil.registerEventListener(vehicleType, "onHeadlandEnd", GlobalPositioningSystem)
     SpecializationUtil.registerEventListener(vehicleType, "onPostAttachImplement", GlobalPositioningSystem)
 end
 
 function GlobalPositioningSystem.registerEvents(vehicleType)
-    SpecializationUtil.registerEvent(vehicleType, "onHeadlandStart")
-    SpecializationUtil.registerEvent(vehicleType, "onHeadlandEnd")
 end
 
 function GlobalPositioningSystem:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
@@ -155,6 +152,9 @@ function GlobalPositioningSystem:onLoad(savegame)
             spec.samples.deactivate = g_soundManager:loadSampleFromXML(xmlFile, "sounds", "deactivate", g_guidanceSteering.modDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
             spec.samples.warning = g_soundManager:loadSampleFromXML(xmlFile, "sounds", "warning", g_guidanceSteering.modDirectory, self.components, 1, AudioGroup.VEHICLE, self.i3dMappings, self)
 
+            spec.playHeadLandWarning = false
+            spec.isHeadlandWarningSamplePlaying = false
+
             delete(xmlFile)
         end
     end
@@ -168,13 +168,10 @@ function GlobalPositioningSystem:onLoad(savegame)
     spec.guidanceSteeringIsActive = false
     spec.guidanceTerrainAngleIsActive = true
     spec.autoInvertOffset = false
-
     spec.shiftParallel = false
+    spec.headlandMode = OnHeadlandState.MODES.OFF
 
     spec.abDistanceCounter = 0
-
-    -- Processor to handle actions on the headland
-    spec.headlandProcessor = HeadlandProcessor:new(self)
 
     spec.lastInputValues = {}
     spec.lastInputValues.guidanceIsActive = true
@@ -231,6 +228,8 @@ function GlobalPositioningSystem:onLoad(savegame)
     spec.dirtyFlag = self:getNextDirtyFlag()
 
     GlobalPositioningSystem.registerMultiPurposeActionEvents(self)
+
+    spec.stateMachine = FSMContext.createGuidanceStateMachine(self)
 end
 
 function GlobalPositioningSystem:onPostLoad(savegame)
@@ -312,6 +311,10 @@ function GlobalPositioningSystem:onReadUpdateStream(streamId, timestamp, connect
             spec.autoInvertOffset = streamReadBool(streamId)
             spec.shiftParallel = streamReadBool(streamId)
         end
+
+        if connection:getIsServer() then
+            spec.playHeadLandWarning = streamReadBool(streamId)
+        end
     end
 end
 
@@ -327,6 +330,10 @@ function GlobalPositioningSystem:onWriteUpdateStream(streamId, connection, dirty
             streamWriteBool(streamId, spec.autoInvertOffset)
 
             streamWriteBool(streamId, spec.shiftParallel)
+        end
+
+        if not connection:getIsServer() then
+            streamWriteBool(streamId, spec.playHeadLandWarning)
         end
     end
 end
@@ -509,7 +516,7 @@ function GlobalPositioningSystem:onUpdate(dt)
 
     local drivingDirection = self:getDrivingDirection()
     local guidanceSteeringIsActive = spec.guidanceSteeringIsActive
-    local x, y, z, driveDirX, driveDirZ = unpack(data.driveTarget)
+    local x, _, z, driveDirX, driveDirZ = unpack(data.driveTarget)
 
     -- Only compute when the vehicle is moving
     if drivingDirection ~= 0 or spec.shiftParallel then
@@ -567,9 +574,15 @@ function GlobalPositioningSystem:onUpdate(dt)
     end
 
     if guidanceSteeringIsActive then
-        GlobalPositioningSystem.guideSteering(self, dt)
+        spec.stateMachine:update(dt)
+    end
+end
 
-        spec.headlandProcessor:handle(dt)
+function GlobalPositioningSystem:onUpdateTick(dt)
+    local spec = self:guidanceSteering_getSpecTable("globalPositioningSystem")
+
+    if self.isClient then
+        GlobalPositioningSystem.updateSounds(self, spec, dt)
     end
 end
 
@@ -852,6 +865,7 @@ function GlobalPositioningSystem:onUpdateGuidanceData(guidanceData)
     data.snapDirection = guidanceData.snapDirection
     data.alphaRad = guidanceData.alphaRad
 
+    spec.stateMachine:reset()
     Logger.info("onUpdateGuidanceData")
 end
 
@@ -862,31 +876,14 @@ function GlobalPositioningSystem:onSteeringStateChanged(isActive)
 
     local spec = self:guidanceSteering_getSpecTable("globalPositioningSystem")
 
+    spec.stateMachine:reset()
+
     local sample = spec.samples.activate
     if not isActive then
         sample = spec.samples.deactivate
     end
 
     g_soundManager:playSample(sample)
-end
-
-function GlobalPositioningSystem:onHeadlandStart()
-    if not self.isClient then
-        return
-    end
-
-    local spec = self:guidanceSteering_getSpecTable("globalPositioningSystem")
-
-    g_soundManager:playSample(spec.samples.warning)
-end
-
-function GlobalPositioningSystem:onHeadlandEnd()
-    if not self.isClient then
-        return
-    end
-
-    local spec = self:guidanceSteering_getSpecTable("globalPositioningSystem")
-    g_soundManager:stopSample(spec.samples.warning)
 end
 
 function GlobalPositioningSystem.guideSteering(vehicle, dt)
@@ -919,7 +916,6 @@ function GlobalPositioningSystem.guideSteering(vehicle, dt)
     local tZ = z1 + step * lineZDir
 
     if spec.showGuidanceLines then
-        DebugUtil.drawDebugCircle(snapX, dY, snapZ, .5, 10, { 1, 0, 0 })
         DebugUtil.drawDebugCircle(tX, dY + .2, tZ, .5, 10, { 0, 1, 0 })
     end
 
@@ -972,6 +968,20 @@ function GlobalPositioningSystem.realignTrack(self, data)
     data.snapDirection = { lineDirX, lineDirZ, lineX, lineZ }
 
     self:updateGuidanceData(data, false, false)
+end
+
+function GlobalPositioningSystem.updateSounds(self, spec, dt)
+    if spec.playHeadLandWarning then
+        if not spec.isHeadlandWarningSamplePlaying then
+            g_soundManager:playSample(spec.samples.warning)
+            spec.isHeadlandWarningSamplePlaying = true
+        end
+    else
+        if spec.isHeadlandWarningSamplePlaying then
+            g_soundManager:stopSample(spec.samples.warning)
+            spec.isHeadlandWarningSamplePlaying = false
+        end
+    end
 end
 
 --- Action events
@@ -1074,7 +1084,6 @@ function GlobalPositioningSystem.actionEventEnableSteering(self, actionName, inp
 
     spec.lastInputValues.guidanceSteeringIsActive = not spec.lastInputValues.guidanceSteeringIsActive
     self:onSteeringStateChanged(spec.lastInputValues.guidanceSteeringIsActive)
-    Logger.info("guidanceSteeringIsActive", spec.lastInputValues.guidanceSteeringIsActive)
 end
 
 function GlobalPositioningSystem.registerMultiPurposeActionEvents(self)
