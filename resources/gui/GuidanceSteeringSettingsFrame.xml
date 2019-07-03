@@ -11,7 +11,7 @@
             <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px -50px" id="boxLayout">
                 <!--Option to enable steering-->
                 <GuiElement type="checkedOption" profile="multiTextOptionSettings" id="guidanceSteeringEnableSteeringElement"
-                            toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_enableGuidanceSteering">
+                            toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_enableGuidanceSteering" >
                     <GuiElement type="button" profile="multiTextOptionLeft"/>
                     <GuiElement type="button" profile="multiTextOptionRight"/>
                     <GuiElement type="text" profile="multiTextOptionText"/>
@@ -48,9 +48,9 @@
                     <GuiElement type="text" profile="multiTextOptionTitle" text="$l10n_guidanceSteering_setting_autoInvertOffset"/>
                     <GuiElement type="bitmap" profile="multiTextOptionBg"/>
                 </GuiElement>
-            </GuiElement>
+            <!--</GuiElement>
 
-            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="450px -50px" id="boxLayout">
+            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="450px -50px" id="boxLayout">-->
                 <GuiElement type="multiTextOption" profile="multiTextOptionSettings" id="guidanceSteeringWidthInCrementElement"
                             toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_widthInCrement">
                     <GuiElement type="button" profile="multiTextOptionLeft"/>
@@ -68,7 +68,7 @@
 
                 <GuiElement type="button" profile="guidanceButton" text="$l10n_guidanceSteering_setting_changeWidth" position="-210px 64px"
                             onClick="onClickChangeWidth"
-                            id="guidanceSteeringChangeWidthButton"/>
+                            id="guidanceSteeringChangeWidthButton" focusChangeOverride="GuidanceSteeringSettingsFrame:onFocusChange"/>
                 <GuiElement type="button" profile="guidanceButton" text="$l10n_guidanceSteering_setting_autoWidth" position="-210px 64px"
                             onClick="onClickAutoWidth"
                             id="guidanceSteeringWidthButton"/>
@@ -84,9 +84,9 @@
                 <GuiElement type="button" profile="guidanceButton" text="$l10n_guidanceSteering_setting_resetOffsetWidth" position="-210px 64px"
                             onClick="onClickResetOffsetWidth"
                             id="guidanceSteeringResetOffsetWidthButton"/>
-            </GuiElement>
+            <!--</GuiElement>
 
-            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="870px -50px" id="boxLayout">
+            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="870px -50px" id="boxLayout">-->
                 <GuiElement type="multiTextOption" profile="multiTextOptionSettings" id="guidanceSteeringHeadlandModeElement"
                             toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_headlandMode">
                     <GuiElement type="button" profile="multiTextOptionLeft"/>

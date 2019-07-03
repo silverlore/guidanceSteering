@@ -188,4 +188,12 @@ function GuidanceSteeringSettingsFrame:updateToolTipBoxVisibility(box)
     box:setVisible(hasText)
 end
 
+function GuidanceSteeringSettingsFrame:onFocusChange(direction)
+	--- FocusManager.[TOP | BOTTOM | LEFT | RIGHT
+	print("focus Changed")
+	print(direction)
+
+	return false, nil
+end
+
 GuidanceSteeringSettingsFrame.L10N_SYMBOL = {}
