@@ -22,12 +22,7 @@ GuidanceSteeringSettingsFrame.INCREMENTS = {
     0.05,
     0.1,
     0.5,
-    1,
-    -1,
-    -0.5,
-    -0.1,
-    -0.05,
-    -0.01,
+    1
 }
 
 function GuidanceSteeringSettingsFrame:new(i18n)
@@ -68,7 +63,7 @@ function GuidanceSteeringSettingsFrame:initialize()
     end
 
     self.guidanceSteeringHeadlandModeElement:setTexts(headlandModes)
-    self.guidanceSteeringHeadlandDistanceElement:setText(tostring(0))
+    self.guidanceSteeringHeadlandDistanceElement:setValue(0)
 end
 
 function GuidanceSteeringSettingsFrame:onFrameOpen()
@@ -92,9 +87,13 @@ function GuidanceSteeringSettingsFrame:onFrameOpen()
 
 		self.guidanceSteeringWidthElement:setIncrement(math.abs(increment))
         self.guidanceSteeringWidthElement:setValue(self.currentWidth)
-        self.guidanceSteeringOffsetWidthElement:setText(tostring(self.currentOffset))
+		self.guidanceSteeringOffsetWidthElement:setIncrement(math.abs(increment))
+        self.guidanceSteeringOffsetWidthElement:setValue(self.currentOffset)
+		self.guidanceSteeringOffsetWidthElement:setMin(-(MathUtil.round(self.currentWidth/2,3)))
+		self.guidanceSteeringOffsetWidthElement:setMax(MathUtil.round(self.currentWidth/2,3))
         self.guidanceSteeringHeadlandModeElement:setState(spec.headlandMode + 1)
-        self.guidanceSteeringHeadlandDistanceElement:setText(tostring(self.currentHeadlandActDistance))
+		self.guidanceSteeringHeadlandDistanceElement:setIncrement(math.abs(increment))
+        self.guidanceSteeringHeadlandDistanceElement:setValue(self.currentHeadlandActDistance)
 
         self.allowSave = true
     end
@@ -152,22 +151,20 @@ function GuidanceSteeringSettingsFrame:onClickAutoWidth()
         self.currentWidth = width
         self.currentOffset = offset
         self.guidanceSteeringWidthElement:setValue(self.currentWidth)
+		self.guidanceSteeringOffsetWidthElement:setMin(-(MathUtil.round(self.currentWidth/2,3)))
+		self.guidanceSteeringOffsetWidthElement:setMax(MathUtil.round(self.currentWidth/2,3))
         self.guidanceSteeringOffsetWidthElement:setText(tostring(self.currentOffset))
     end
 end
 
 function GuidanceSteeringSettingsFrame:onClickResetOffsetWidth()
     self.currentOffset = 0
-    self.guidanceSteeringOffsetWidthElement:setText(tostring(self.currentOffset))
+    self.guidanceSteeringOffsetWidthElement:setValue(self.currentOffset)
 end
 
 function GuidanceSteeringSettingsFrame:onClickChangeOffsetWidth()
-    local state = self.guidanceSteeringWidthInCrementElement:getState()
-    local increment = GuidanceSteeringSettingsFrame.INCREMENTS[state]
-
-    local threshold = self.currentWidth * 0.5
-    self.currentOffset = MathUtil.clamp(self.currentOffset + increment, -threshold, threshold)
-    self.guidanceSteeringOffsetWidthElement:setText(tostring(self.currentOffset))
+    self.currentOffset = self.guidanceSteeringOffsetWidthElement:getValue()
+    
 end
 
 function GuidanceSteeringSettingsFrame:onClickChangeIncrement()
@@ -175,10 +172,15 @@ function GuidanceSteeringSettingsFrame:onClickChangeIncrement()
     local increment = GuidanceSteeringSettingsFrame.INCREMENTS[state]
 
 	self.guidanceSteeringWidthElement:setIncrement(math.abs(increment))
+	self.guidanceSteeringOffsetWidthElement:setIncrement(math.abs(increment))
+	self.guidanceSteeringHeadlandDistanceElement:setIncrement(math.abs(increment))
 end
 
 function GuidanceSteeringSettingsFrame:onClickWidthChange()
 	self.currentWidth = self.guidanceSteeringWidthElement:getValue()
+
+	self.guidanceSteeringOffsetWidthElement:setMin(-(MathUtil.round(self.currentWidth/2,3)))
+	self.guidanceSteeringOffsetWidthElement:setMax(MathUtil.round(self.currentWidth/2,3))
 end
 
 --- Get the frame's main content element's screen size.
