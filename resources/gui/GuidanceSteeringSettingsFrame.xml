@@ -8,10 +8,10 @@
         </GuiElement>
 
         <GuiElement type="bitmap" profile="ingameMenuSettingsBox" position="130px -124px" id="container">
-            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px -50px" id="boxLayout">
+            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px -50px" id="boxLayout" size="1550px 560px">
                 <!--Option to enable steering-->
                 <GuiElement type="checkedOption" profile="multiTextOptionSettings" id="guidanceSteeringEnableSteeringElement"
-                            toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_enableGuidanceSteering">
+                            toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_enableGuidanceSteering" >
                     <GuiElement type="button" profile="multiTextOptionLeft"/>
                     <GuiElement type="button" profile="multiTextOptionRight"/>
                     <GuiElement type="text" profile="multiTextOptionText"/>
@@ -40,7 +40,7 @@
                 </GuiElement>
 
                 <!--Option to auto invert offset-->
-                <GuiElement type="checkedOption" profile="multiTextOptionSettings" id="guidanceSteeringAutoInvertOffsetElement"
+                <GuiElement type="checkedOption" profile="multiTextOptionSettings" id="guidanceSteeringAutoInvertOffsetElement" margin="30px 28px 30px 200px"
                             toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_autoInvertOffset">
                     <GuiElement type="button" profile="multiTextOptionLeft"/>
                     <GuiElement type="button" profile="multiTextOptionRight"/>
@@ -48,9 +48,7 @@
                     <GuiElement type="text" profile="multiTextOptionTitle" text="$l10n_guidanceSteering_setting_autoInvertOffset"/>
                     <GuiElement type="bitmap" profile="multiTextOptionBg"/>
                 </GuiElement>
-            </GuiElement>
-
-            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="450px -50px" id="boxLayout">
+            
                 <GuiElement type="multiTextOption" profile="multiTextOptionSettings" id="guidanceSteeringWidthInCrementElement"
                             toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_widthInCrement">
                     <GuiElement type="button" profile="multiTextOptionLeft"/>
@@ -68,7 +66,7 @@
 
                 <GuiElement type="button" profile="guidanceButton" text="$l10n_guidanceSteering_setting_changeWidth" position="-210px 64px"
                             onClick="onClickChangeWidth"
-                            id="guidanceSteeringChangeWidthButton"/>
+                            id="guidanceSteeringChangeWidthButton" focusChangeOverride="GuidanceSteeringSettingsFrame:onFocusChange"/>
                 <GuiElement type="button" profile="guidanceButton" text="$l10n_guidanceSteering_setting_autoWidth" position="-210px 64px"
                             onClick="onClickAutoWidth"
                             id="guidanceSteeringWidthButton"/>
@@ -84,10 +82,8 @@
                 <GuiElement type="button" profile="guidanceButton" text="$l10n_guidanceSteering_setting_resetOffsetWidth" position="-210px 64px"
                             onClick="onClickResetOffsetWidth"
                             id="guidanceSteeringResetOffsetWidthButton"/>
-            </GuiElement>
-
-            <GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="870px -50px" id="boxLayout">
-                <GuiElement type="multiTextOption" profile="multiTextOptionSettings" id="guidanceSteeringHeadlandModeElement"
+            
+              <GuiElement type="multiTextOption" profile="multiTextOptionSettings" id="guidanceSteeringHeadlandModeElement"
                             toolTipElementId="settingsHelpBoxText" toolTipText="$l10n_guidanceSteering_tooltip_headlandMode">
                     <GuiElement type="button" profile="multiTextOptionLeft"/>
                     <GuiElement type="button" profile="multiTextOptionRight"/>
