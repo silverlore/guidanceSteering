@@ -80,7 +80,7 @@ function GuidanceSteeringSettingsFrame:onFrameOpen()
         self.guidanceSteeringAutoInvertOffsetElement:setIsChecked(spec.autoInvertOffset)
         self.currentWidth = data.width
         self.currentOffset = data.offsetWidth
-        self.currentHeadlandActDistance = 0 -- Todo: implement
+        self.currentHeadlandActDistance = data.headlineArcDistance
 		
 		local state = self.guidanceSteeringWidthInCrementElement:getState()
 		local increment = GuidanceSteeringSettingsFrame.INCREMENTS[state]
@@ -116,6 +116,8 @@ function GuidanceSteeringSettingsFrame:onFrameClose()
             local headlandMode = self.guidanceSteeringHeadlandModeElement:getState()
             local increment = GuidanceSteeringSettingsFrame.INCREMENTS[state]
 
+			self.currentHeadlandActDistance = guidanceSteeringHeadlandDistanceElement:getValue()
+
             -- Todo: cleanup later
             if guidanceSteeringIsActive and not data.isCreated then
                 g_currentMission:showBlinkingWarning(g_i18n:getText("guidanceSteering_warning_createTrackFirst"), 4000)
@@ -130,9 +132,11 @@ function GuidanceSteeringSettingsFrame:onFrameClose()
             spec.headlandMode = headlandMode - 1
 
             if data.width ~= nil and data.width ~= self.currentWidth
-                    or data.offsetWidth ~= nil and data.offsetWidth ~= self.currentOffset then
+                    or data.offsetWidth ~= nil and data.offsetWidth ~= self.currentOffset 
+					or data.headlineArcDistance ~= nil and data.headlineArcDistance ~= self.currentHeadlandActDistance then
                 data.width = self.currentWidth
                 data.offsetWidth = self.currentOffset
+				data.headlineArcDistance = self.currentHeadlandActDistance
 
                 vehicle:updateGuidanceData(data, false, false)
             end
