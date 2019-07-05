@@ -13,8 +13,9 @@ GlobalPositioningSystem = {}
 -- Circles
 
 GlobalPositioningSystem.CONFIG_NAME = "buyableGPS"
-GlobalPositioningSystem.DEFAULT_WIDTH = 9.144 -- autotrack default (~30ft)
+GlobalPositioningSystem.DEFAULT_WIDTH = 9.14 -- autotrack default (~30ft)
 GlobalPositioningSystem.DEFAULT_OFFSET = 0
+GlobalPositioningSystem.DEFAULT_HEADLINE_ARC_DISTANCE = 9
 GlobalPositioningSystem.DIRECTION_LEFT = -1
 GlobalPositioningSystem.DIRECTION_RIGHT = 1
 GlobalPositioningSystem.AB_DROP_DISTANCE = 15
@@ -208,7 +209,8 @@ function GlobalPositioningSystem:onLoad(savegame)
 
     spec.guidanceData = {}
     spec.guidanceData.width = GlobalPositioningSystem.DEFAULT_WIDTH
-    spec.guidanceData.offsetWidth = 0
+    spec.guidanceData.offsetWidth = GlobalPositioningSystem.DEFAULT_OFFSET
+	spec.guidanceData.headlineArcDistance = GlobalPositioningSystem.DEFAULT_HEADLINE_ARC_DISTANCE
     spec.guidanceData.movingDirection = 1
     spec.guidanceData.isReverseDriving = false
     spec.guidanceData.movingForwards = false
@@ -841,6 +843,7 @@ function GlobalPositioningSystem:onUpdateGuidanceData(guidanceData)
     local data = spec.guidanceData
     data.width = Utils.getNoNil(guidanceData.width, GlobalPositioningSystem.DEFAULT_WIDTH)
     data.offsetWidth = Utils.getNoNil(guidanceData.offsetWidth, GlobalPositioningSystem.DEFAULT_OFFSET)
+	data.headlineArcDistance = Utils.getNoNil(guidanceData.headlineArcDistance, GlobalPositioningSystem.DEFAULT_HEADLINE_ARC_DISTANCE)
     data.snapDirectionMultiplier = guidanceData.snapDirectionMultiplier
     data.snapDirection = guidanceData.snapDirection
     data.alphaRad = guidanceData.alphaRad
