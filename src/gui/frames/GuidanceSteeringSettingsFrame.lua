@@ -112,7 +112,7 @@ function GuidanceSteeringSettingsFrame:onFrameClose()
             local headlandMode = self.guidanceSteeringHeadlandModeElement:getState()
             local increment = GuidanceSteeringSettingsFrame.INCREMENTS[state]
 
-			self.currentHeadlandActDistance = guidanceSteeringHeadlandDistanceElement:getValue()
+			self.currentHeadlandActDistance = self.guidanceSteeringHeadlandDistanceElement:getValue()
 
             -- Todo: cleanup later
             if guidanceSteeringIsActive and not data.isCreated then
