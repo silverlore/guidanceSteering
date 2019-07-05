@@ -87,8 +87,8 @@ function FollowLineState:detectedHeadland(lastSpeed)
     local data = self.object:getGuidanceData()
     local x, y, z = unpack(data.driveTarget)
 
-    local speedMultiplier = 1 + lastSpeed / 100 -- increase break distance
-    local distanceToAct = self.actDistance * speedMultiplier
+    local speedMultiplier = (lastSpeed / 100) * 30 -- increase break distance
+    local distanceToAct = data.headheadlineArcDistance * speedMultiplier
     local lookAheadStepDistance = distanceToAct + 5 -- m
     local distanceToHeadLand, isDistanceOnField = HeadlandUtil.getDistanceToHeadLand(self, self.object, x, y, z, lookAheadStepDistance)
 
