@@ -50,7 +50,7 @@ function TrackSaveEvent:readStream(streamId, connection)
     track.name = streamReadString(streamId)
     track.strategy = streamReadInt8(streamId)
     track.method = streamReadInt8(streamId)
-    track.guidanceData = GuidanceUtil.readGuidanceDataObject(streamId)
+	track.guidanceData = GuidanceUtil.readGuidanceDataObject(streamId)
 
     self.track = track
 

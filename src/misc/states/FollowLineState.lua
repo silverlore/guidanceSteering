@@ -93,7 +93,7 @@ function FollowLineState:detectedHeadland(lastSpeed)
     local distanceToHeadLand, isDistanceOnField = HeadlandUtil.getDistanceToHeadLand(self, self.object, x, y, z, lookAheadStepDistance)
 
     if distanceToHeadLand <= distanceToAct + (lookAheadStepDistance * 0.5) and not isDistanceOnField then
-        local spec = self.object:guidanceSteering_getSpecTable("globalPositioningSystem")
+	    local spec = self.object:guidanceSteering_getSpecTable("globalPositioningSystem")
         spec.playHeadLandWarning = true
     end
 

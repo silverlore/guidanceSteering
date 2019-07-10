@@ -79,7 +79,7 @@ function GuidanceSteering:onMissionSaveToSavegame(xmlFile)
             setXMLInt(xmlFile, key .. "#method", track.method)
             setXMLFloat(xmlFile, key .. ".guidanceData#width", track.guidanceData.width)
             setXMLFloat(xmlFile, key .. ".guidanceData#offsetWidth", track.guidanceData.offsetWidth)
-			setXMLFloat(xmlFile, key .. ".guidanceData#headlineArcDistance", track.guidanceData.headlineDistance)
+			setXMLFloat(xmlFile, key .. ".guidanceData#headlineArcDistance", track.guidanceData.headlineArcDistance)
             setXMLString(xmlFile, key .. ".guidanceData#snapDirection", table.concat(track.guidanceData.snapDirection, " "))
             setXMLString(xmlFile, key .. ".guidanceData#driveTarget", table.concat(track.guidanceData.driveTarget, " "))
         end
@@ -88,9 +88,9 @@ end
 
 function GuidanceSteering:onReadStream(streamId, connection)
     if connection:getIsServer() then
-        local numTracks = streamReadUIntN(streamId, GuidanceSteering.SEND_NUM_BITS) + 1
-
-        for i = 1, numTracks do
+        local numTracks = streamReadUIntN(streamId, GuidanceSteering.SEND_NUM_BITS)
+		
+		for i = 1, numTracks do
             local track = {}
             track.name = streamReadString(streamId)
             track.strategy = streamReadUIntN(streamId, 2)
@@ -106,7 +106,7 @@ end
 
 function GuidanceSteering:onWriteStream(streamId, connection)
     if not connection:getIsServer() then
-        streamWriteUIntN(streamId, #self.savedTracks - 1, GuidanceSteering.SEND_NUM_BITS)
+        streamWriteUIntN(streamId, #self.savedTracks, GuidanceSteering.SEND_NUM_BITS)
 
         for _, track in ipairs(self.savedTracks) do
             streamWriteString(streamId, track.name)

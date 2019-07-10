@@ -42,7 +42,7 @@ function GuidanceDataChangedEvent:readStream(streamId, connection)
     self.isReset = streamReadBool(streamId)
 
     if not self.isReset then
-        self.data = GuidanceUtil.readGuidanceDataObject(streamId)
+		self.data = GuidanceUtil.readGuidanceDataObject(streamId)
     end
 
     --g_currentMission.accessHandler:canFarmAccess(self:getActiveFarm())

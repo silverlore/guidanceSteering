@@ -208,7 +208,7 @@ function GlobalPositioningSystem:onLoad(savegame)
     spec.autoInvertOffsetSent = false
 
     spec.guidanceData = {}
-    spec.guidanceData.width = GlobalPositioningSystem.DEFAULT_WIDTH
+	spec.guidanceData.width = GlobalPositioningSystem.DEFAULT_WIDTH
     spec.guidanceData.offsetWidth = GlobalPositioningSystem.DEFAULT_OFFSET
 	spec.guidanceData.headlineArcDistance = GlobalPositioningSystem.DEFAULT_HEADLINE_ARC_DISTANCE
     spec.guidanceData.movingDirection = 1
@@ -221,6 +221,7 @@ function GlobalPositioningSystem:onLoad(savegame)
     spec.guidanceData.snapDirection = { 0, 0, 0, 0 }
     spec.guidanceData.driveTarget = { 0, 0, 0, 0, 0 }
     spec.guidanceData.isCreated = false
+
 
     if self.isClient then
         spec.guidanceData.lastLoadedTrackId = 0
@@ -266,7 +267,7 @@ function GlobalPositioningSystem:onReadStream(streamId, connection)
         local spec = self:guidanceSteering_getSpecTable("globalPositioningSystem")
 
         if spec.hasGuidanceSystem then
-            local data = GuidanceUtil.readGuidanceDataObject(streamId)
+			local data = GuidanceUtil.readGuidanceDataObject(streamId)
 
             -- sync guidance data
             self:updateGuidanceData(data, false, false, true)
