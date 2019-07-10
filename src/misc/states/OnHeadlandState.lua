@@ -54,6 +54,10 @@ end
 function OnHeadlandState:update(dt)
     OnHeadlandState:superClass().update(self, dt)
 
+	local object = self.object
+
+    DriveUtil.guideSteering(object, dt)
+
     local mode = self.mode
     if mode ~= OnHeadlandState.MODES.OFF then
         if mode == OnHeadlandState.MODES.STOP then
