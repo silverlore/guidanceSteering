@@ -129,7 +129,7 @@ function GuidanceSteeringSettingsFrame:onFrameClose()
             spec.lastInputValues.guidanceTerrainAngleIsActive = guidanceTerrainAngleIsActive
             spec.lastInputValues.autoInvertOffset = autoInvertOffset
             spec.lastInputValues.widthIncrement = math.abs(increment)
-            spec.headlandMode = headlandMode - 1
+            spec.lastInputValues.headlandMode = headlandMode - 1
 
             if data.width ~= nil and data.width ~= self.currentWidth
                     or data.offsetWidth ~= nil and data.offsetWidth ~= self.currentOffset 

@@ -8,6 +8,7 @@
 local directory = g_currentModDirectory
 local modName = g_currentModName
 
+source(Utils.getFilename("src/events/SteeringStateChangedEvent.lua", directory))
 source(Utils.getFilename("src/events/TrackSaveEvent.lua", directory))
 source(Utils.getFilename("src/events/TrackDeleteEvent.lua", directory))
 source(Utils.getFilename("src/events/ABPointPushedEvent.lua", directory))

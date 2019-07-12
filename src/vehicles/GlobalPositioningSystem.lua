@@ -184,6 +184,7 @@ function GlobalPositioningSystem:onLoad(savegame)
     spec.lastInputValues.shiftParallelValue = 0
     spec.lastInputValues.widthValue = 0
     spec.lastInputValues.widthIncrement = 0.1 -- no need to sync this.
+	spec.lastInputValues.headlandMode = OnHeadlandState.MODES.OFF
 
     -- Shift control
     spec.shiftControl = {}
@@ -206,6 +207,7 @@ function GlobalPositioningSystem:onLoad(savegame)
     spec.guidanceTerrainAngleIsActiveSent = false
     spec.shiftParallelSent = false
     spec.autoInvertOffsetSent = false
+	spec.headlandModeSent = OnHeadlandState.MODES.OFF
 
     spec.guidanceData = {}
 	spec.guidanceData.width = GlobalPositioningSystem.DEFAULT_WIDTH
@@ -267,12 +269,15 @@ function GlobalPositioningSystem:onReadStream(streamId, connection)
         local spec = self:guidanceSteering_getSpecTable("globalPositioningSystem")
 
         if spec.hasGuidanceSystem then
+			local isCreated = streamReadBool(streamId)
 			local data = GuidanceUtil.readGuidanceDataObject(streamId)
 
-            -- sync guidance data
-            self:updateGuidanceData(data, false, false, true)
 
+            -- sync guidance data
+            self:updateGuidanceData(data, isCreated, false, true)
+			
             -- sync settings
+			spec.headlandMode = streamReadUInt16(streamId)
             spec.showGuidanceLines = streamReadBool(streamId)
             spec.guidanceIsActive = streamReadBool(streamId)
             spec.guidanceSteeringIsActive = streamReadBool(streamId)
@@ -289,10 +294,13 @@ function GlobalPositioningSystem:onWriteStream(streamId, connection)
         if spec.hasGuidanceSystem then
             local data = spec.guidanceData
 
+			streamWriteBool(streamId, data.isCreated)
+
             -- sync guidance data
             GuidanceUtil.writeGuidanceDataObject(streamId, data)
 
             -- sync settings
+			streamWriteUInt16(streamId, spec.headlandMode)
             streamWriteBool(streamId, spec.showGuidanceLines)
             streamWriteBool(streamId, spec.guidanceIsActive)
             streamWriteBool(streamId, spec.guidanceSteeringIsActive)
@@ -307,6 +315,7 @@ function GlobalPositioningSystem:onReadUpdateStream(streamId, timestamp, connect
 
     if spec.hasGuidanceSystem then
         if streamReadBool(streamId) then
+			spec.headlandMode = streamReadUInt16(streamId)
             spec.showGuidanceLines = streamReadBool(streamId)
             spec.guidanceIsActive = streamReadBool(streamId)
             spec.guidanceSteeringIsActive = streamReadBool(streamId)
@@ -326,6 +335,7 @@ function GlobalPositioningSystem:onWriteUpdateStream(streamId, connection, dirty
 
     if spec.hasGuidanceSystem then
         if streamWriteBool(streamId, bitAND(dirtyMask, spec.dirtyFlag) ~= 0) then
+			streamWriteUInt16(streamId, spec.headlandMode)
             streamWriteBool(streamId, spec.showGuidanceLines)
             streamWriteBool(streamId, spec.guidanceIsActive)
             streamWriteBool(streamId, spec.guidanceSteeringIsActive)
@@ -381,6 +391,7 @@ function GlobalPositioningSystem.updateNetworkInputs(self)
     spec.guidanceTerrainAngleIsActive = spec.lastInputValues.guidanceTerrainAngleIsActive
     spec.autoInvertOffset = spec.lastInputValues.autoInvertOffset
     spec.shiftParallel = spec.lastInputValues.shiftParallel
+	spec.headlandMode = spec.lastInputValues.headlandMode
 
     -- Reset
     spec.lastInputValues.shiftParallel = false
@@ -392,6 +403,7 @@ function GlobalPositioningSystem.updateNetworkInputs(self)
             or spec.autoInvertOffset ~= spec.autoInvertOffsetSent
             or spec.shiftParallel ~= spec.shiftParallelSent
             or spec.shiftParallelDirection ~= spec.shiftParallelDirectionSent
+			or spec.headlandMode ~= spec.headlandModeSent
     then
         spec.guidanceSteeringIsActiveSent = spec.guidanceSteeringIsActive
         spec.showGuidanceLinesSent = spec.showGuidanceLines
@@ -400,6 +412,7 @@ function GlobalPositioningSystem.updateNetworkInputs(self)
         spec.autoInvertOffsetSent = spec.autoInvertOffset
         spec.shiftParallelSent = spec.shiftParallel
         spec.shiftParallelDirectionSent = spec.shiftParallelDirection
+		spec.headlandModeSent = spec.headlandMode
 
         self:raiseDirtyFlags(spec.dirtyFlag)
     end
@@ -873,16 +886,19 @@ function GlobalPositioningSystem:onUpdateGuidanceData(guidanceData)
     Logger.info("onUpdateGuidanceData")
 end
 
-function GlobalPositioningSystem:onSteeringStateChanged(isActive)
-    if not self.isClient then
+function GlobalPositioningSystem:onSteeringStateChanged(isActive, noEventSend)
+
+	SteeringStateChangedEvent.sendEvent(self, isActive, noEventSend)
+    
+	local spec = self:guidanceSteering_getSpecTable("globalPositioningSystem")
+
+	spec.stateMachine:reset()
+
+	if not self.isClient then
         return
     end
 
-    local spec = self:guidanceSteering_getSpecTable("globalPositioningSystem")
-
-    spec.stateMachine:reset()
-
-    local sample = spec.samples.activate
+	local sample = spec.samples.activate
     if not isActive then
         sample = spec.samples.deactivate
     end
@@ -1069,6 +1085,8 @@ function GlobalPositioningSystem.actionEventSetABPoint(self, actionName, inputVa
 end
 
 function GlobalPositioningSystem.actionEventEnableSteering(self, actionName, inputValue, callbackState, isAnalog)
+	Logger.info("Activate/disable steering")
+
     if not self:getHasGuidanceSystem() then
         return
     end

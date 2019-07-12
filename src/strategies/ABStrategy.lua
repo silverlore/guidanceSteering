@@ -147,7 +147,7 @@ function ABStrategy:draw(data, guidanceSteeringIsActive, autoInvertOffset)
         drawHeadlineSteps(step + 1, stepSize, lx, lz, dirX, dirZ, rgb)
     end
 
-	do
+	if not drawDirectionLine then
 		local headlineLineOffset = (ABStrategy.STEP_SIZE * (ABStrategy.HEADLINE_STEPS - 2)) /2
 		local beta = data.alphaRad
 		local direction = Utils.getNoNil(data.snapDirectionMultiplier * -1 ,1)

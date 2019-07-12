@@ -105,8 +105,7 @@ function GuidanceUtil.writeGuidanceDataObject(streamId, data)
     streamWriteUInt16(streamId, math.floor(data.width * 1000))
     streamWriteFloat32(streamId, data.offsetWidth)
 	streamWriteUInt16(streamId, math.floor(data.headlineArcDistance * 1000))
-
-
+	
     streamWriteBool(streamId, data.snapDirectionMultiplier ~= nil)
     if data.snapDirectionMultiplier ~= nil then
         streamWriteUIntN(streamId, data.snapDirectionMultiplier, 2)
@@ -141,7 +140,7 @@ function GuidanceUtil.readGuidanceDataObject(streamId)
 	data.width = streamReadUInt16(streamId) / 1000
     data.offsetWidth = streamReadFloat32(streamId)
 	data.headlineArcDistance = streamReadUInt16(streamId) / 1000
-
+	
     if streamReadBool(streamId) then
         data.snapDirectionMultiplier = streamReadUIntN(streamId, 2)
     end
@@ -150,6 +149,7 @@ function GuidanceUtil.readGuidanceDataObject(streamId)
         data.alphaRad = streamReadFloat32(streamId)
     end
 
+	
     local compressionParamsXZ = g_currentMission.vehicleXZPosHighPrecisionCompressionParams
     local compressionParamsY = g_currentMission.vehicleXZPosHighPrecisionCompressionParams
 

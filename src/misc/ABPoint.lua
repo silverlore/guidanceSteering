@@ -45,6 +45,7 @@ end
 ---Creates the next point dependent on the last point
 ---@param data table
 function ABPoint:nextPoint(data)
+
     if self:getIsCreated() then
         return
     end

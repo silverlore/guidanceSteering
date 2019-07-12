@@ -97,7 +97,6 @@ end
 ---Resets the state machine to the initial state
 function FSM:reset()
     local state = self:getInitialState()
-	print("Reset to state " .. state.id)
     self:transition(state)
 end
 
@@ -114,7 +113,6 @@ function FSM:update(dt)
 
     if stateContext ~= FSM.ANY_STATE then
         local state = self.states[stateContext]
-		print("transition to state " .. stateContext)
         self:transition(state)
     end
 end

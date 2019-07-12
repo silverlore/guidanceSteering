@@ -59,6 +59,7 @@ function OnHeadlandState:update(dt)
     DriveUtil.guideSteering(object, dt)
 
     local mode = self.mode
+
     if mode ~= OnHeadlandState.MODES.OFF then
         if mode == OnHeadlandState.MODES.STOP then
             return FSMContext.STATES.STOPPED_STATE
